@@ -40,3 +40,10 @@ class HealthCheck(BaseModel):
     database_connected: bool
     faiss_loaded: bool
     ollama_available: bool
+
+
+class QueryStats(BaseModel):
+    total_queries: int
+    successful_queries: int
+    average_confidence: float
+    average_response_time_ms: float

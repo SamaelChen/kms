@@ -1,7 +1,7 @@
 """Pydantic models for queries and responses"""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Dict
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class QueryRequest(BaseModel):
@@ -24,7 +24,7 @@ class QueryResponse(BaseModel):
     confidence_score: float
     citations: List[Citation]
     response_time_ms: float
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class QueryLogEntry(BaseModel):
@@ -40,8 +40,7 @@ class QueryLogEntry(BaseModel):
     created_at: datetime
     success: bool
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class QueryStats(BaseModel):

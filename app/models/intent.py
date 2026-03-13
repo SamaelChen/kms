@@ -1,7 +1,7 @@
 """Pydantic models for intent spaces"""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class IntentSpaceBase(BaseModel):
@@ -26,8 +26,7 @@ class IntentSpaceResponse(IntentSpaceBase):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class IntentClassification(BaseModel):
@@ -35,7 +34,7 @@ class IntentClassification(BaseModel):
     classified_intent: str
     confidence_score: float
     method: str  # rule_based, llm, fallback
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = datetime.now(timezone.utc)
 
 
 class IntentSpaceList(BaseModel):
