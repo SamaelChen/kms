@@ -3,7 +3,7 @@ IntelliKnow KMS - Configuration Module
 """
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     
     # Security
     API_KEY: str = ""
+    
+    # China Development (optional)
+    HF_ENDPOINT: Optional[str] = None
+    PIP_INDEX_URL: Optional[str] = None
     
     # Default Intent Spaces
     DEFAULT_INTENT_SPACES: List[str] = ["HR", "Legal", "Finance", "General"]
