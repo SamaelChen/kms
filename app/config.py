@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     DATA_DIR: Path = BASE_DIR / "data"
     UPLOAD_DIR: Path = DATA_DIR / "uploads"
     FAISS_DIR: Path = DATA_DIR / "faiss"
+    FAISS_INDEX_PATH: str = "data/faiss"
     
     # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///data/sqlite/kms.db"
