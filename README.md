@@ -88,14 +88,71 @@ streamlit run admin-dashboard/app.py
 
 ### Docker Deployment
 
+#### Option 1: Docker Compose (Recommended - v2.x)
+
 ```bash
+# Build and start all services
+docker compose up -d --build
+
+# Or without rebuilding (if images exist)
+docker compose up -d
+```
+
+#### Option 2: Docker Compose (Legacy - v1.x)
+
+```bash
+# Build and start all services
+docker-compose up -d --build
+
+# Or without rebuilding
 docker-compose up -d
 ```
 
-Access:
-- API: http://localhost:8000
-- Dashboard: http://localhost:8501
-- API Docs: http://localhost:8000/docs
+#### Verify Services
+
+```bash
+# Check running containers
+docker ps
+
+# View logs
+docker compose logs -f
+
+# Test API health
+curl http://localhost:8000/api/v1/health/
+```
+
+#### Access Points
+
+| Service | URL | Notes |
+|---------|-----|-------|
+| API | http://localhost:8000 | FastAPI backend |
+| Dashboard | http://localhost:8501 | Streamlit admin |
+| API Docs | http://localhost:8000/docs | Swagger UI |
+| Ollama | http://localhost:11435 | LLM service (port 11435 to avoid conflicts) |
+
+#### First-Time Setup
+
+**Important**: The first query will timeout as sentence-transformers downloads the embedding model (~400MB). This is expected behavior.
+
+```bash
+# Pre-download embedding model (optional, prevents first-query timeout)
+docker exec kms-api-1 python3 -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+# Pull LLM model for queries
+docker exec kms-ollama-1 ollama pull qwen3.5:9b
+# Or for testing, use a smaller model:
+docker exec kms-ollama-1 ollama pull qwen:0.5b
+```
+
+#### Stopping Services
+
+```bash
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (WARNING: deletes data)
+docker compose down -v
+```
 
 ## Usage
 
