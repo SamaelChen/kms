@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     
     # AI/LLM Configuration
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL: str = "qwen:7b"
+    LLM_MODEL: str = "qwen2.5:7b"
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
     
     # Intent Classification

@@ -11,7 +11,7 @@ A production-ready knowledge management system that enables enterprises to inges
 - **Semantic Search**: FAISS-based vector search for relevant document retrieval
 - **Multi-Frontend Support**: Telegram and Microsoft Teams bot integrations
 - **Admin Dashboard**: Streamlit-based interface for management and analytics
-- **Local LLM**: Uses Ollama with Qwen3.5-9B for data privacy
+- **Local LLM**: Uses Ollama with Qwen2.5-7B for data privacy
 
 ## Architecture
 
@@ -74,7 +74,7 @@ cp .env.example .env
 4. Start Ollama and pull the model:
 ```bash
 ollama serve
-ollama pull qwen:7b
+ollama pull qwen2.5:7b
 ```
 
 5. Run the application:
@@ -160,7 +160,7 @@ pytest
 - **Admin UI**: Streamlit
 - **Vector DB**: FAISS
 - **Relational DB**: SQLite
-- **LLM**: Ollama (Qwen3.5-9B)
+- **LLM**: Ollama (Qwen2.5-7B)
 - **Embeddings**: sentence-transformers (all-MiniLM-L6-v2)
 
 ## License
