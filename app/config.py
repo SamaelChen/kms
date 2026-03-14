@@ -28,8 +28,13 @@ class Settings(BaseSettings):
     
     # AI/LLM Configuration
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL: str = "qwen3.5:9b"
+    LLM_MODEL: str = "qwen:0.5b"
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    
+    # Timeouts
+    LLM_REQUEST_TIMEOUT: int = 30  # seconds
+    LLM_GENERATION_TIMEOUT: int = 60  # seconds
+    HTTP_CLIENT_TIMEOUT: int = 120  # seconds
     
     # Intent Classification
     INTENT_CONFIDENCE_THRESHOLD: float = 0.70

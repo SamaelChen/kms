@@ -7,14 +7,12 @@ from app.config import settings
 
 
 class IntentClassifier:
-    """Classify queries into intent spaces"""
-    
     def __init__(self):
         self.confidence_threshold = settings.INTENT_CONFIDENCE_THRESHOLD
         self.ollama_url = f"{settings.OLLAMA_BASE_URL}/api/generate"
         self.llm_model = settings.LLM_MODEL
+        self.client: Optional[httpx.AsyncClient] = None
         
-        # Rule-based keyword patterns
         self.intent_patterns = {
             "HR": [
                 r"\b(hr|human resources|employee|staff|hiring|recruitment|onboarding|offboarding|payroll|benefit|leave|vacation|sick day|policy|handbook)\b",
@@ -29,6 +27,18 @@ class IntentClassifier:
                 r"\b(cost|revenue|profit|loss|investment|funding|purchase order|po|quote|pricing)\b"
             ]
         }
+    
+    async def _get_client(self) -> httpx.AsyncClient:
+        if self.client is None or self.client.is_closed:
+            self.client = httpx.AsyncClient(
+                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+                timeout=httpx.Timeout(15.0, connect=5.0)
+            )
+        return self.client
+    
+    async def close(self):
+        if self.client and not self.client.is_closed:
+            await self.client.aclose()
     
     async def classify(self, query: str) -> Tuple[str, float, str]:
         """
@@ -86,12 +96,6 @@ class IntentClassifier:
         return best_intent, confidence
     
     async def _llm_classify(self, query: str) -> Tuple[Optional[str], float]:
-        """
-        Classify using LLM
-        
-        Returns:
-            Tuple of (intent_space, confidence_score) or (None, 0)
-        """
         try:
             prompt = f"""Classify the following query into one of these categories: HR, Legal, Finance, or General.
 
@@ -102,31 +106,28 @@ Example: HR, 0.85
 
 Classification:"""
             
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.ollama_url,
-                    json={
-                        "model": self.llm_model,
-                        "prompt": prompt,
-                        "stream": False
-                    },
-                    timeout=10.0
-                )
+            client = await self._get_client()
+            response = await client.post(
+                self.ollama_url,
+                json={
+                    "model": self.llm_model,
+                    "prompt": prompt,
+                    "stream": False
+                }
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                text = result.get("response", "").strip()
                 
-                if response.status_code == 200:
-                    result = response.json()
-                    text = result.get("response", "").strip()
+                parts = text.split(",")
+                if len(parts) >= 2:
+                    intent = parts[0].strip()
+                    confidence = float(parts[1].strip())
                     
-                    # Parse response
-                    parts = text.split(",")
-                    if len(parts) >= 2:
-                        intent = parts[0].strip()
-                        confidence = float(parts[1].strip())
-                        
-                        # Validate intent
-                        valid_intents = ["HR", "Legal", "Finance", "General"]
-                        if intent in valid_intents:
-                            return intent, confidence
+                    valid_intents = ["HR", "Legal", "Finance", "General"]
+                    if intent in valid_intents:
+                        return intent, confidence
             
             return None, 0.0
             

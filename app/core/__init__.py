@@ -1,5 +1,7 @@
 """Core module exports"""
 from app.core.document_processor import DocumentProcessor, document_processor
+from app.core.document_parser import DocumentParser
+from app.core.chunker import TextChunker
 from app.core.embedding import EmbeddingGenerator, embedding_generator
 from app.core.knowledge_base import KnowledgeBase, knowledge_base
 from app.core.intent_classifier import IntentClassifier, intent_classifier
@@ -8,6 +10,8 @@ from app.core.response_generator import ResponseGenerator, response_generator
 
 __all__ = [
     "DocumentProcessor", "document_processor",
+    "DocumentParser",
+    "TextChunker",
     "EmbeddingGenerator", "embedding_generator",
     "KnowledgeBase", "knowledge_base",
     "IntentClassifier", "intent_classifier",

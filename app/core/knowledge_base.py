@@ -111,8 +111,16 @@ class KnowledgeBase:
         
         return all_results
     
+    def generate_embeddings(self, texts: List[str]) -> np.ndarray:
+        """Generate embeddings for a list of texts."""
+        if not texts:
+            return np.array([])
+        return self.embedding_gen.generate(texts)
+    
+    def generate_single_embedding(self, text: str) -> np.ndarray:
+        return self.embedding_gen.generate_single(text)
+    
     def get_stats(self, intent_space: Optional[str] = None) -> dict:
-        """Get knowledge base statistics"""
         return self.faiss_mgr.get_stats(intent_space)
 
 

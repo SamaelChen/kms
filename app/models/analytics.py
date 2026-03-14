@@ -47,3 +47,18 @@ class QueryStats(BaseModel):
     successful_queries: int
     average_confidence: float
     average_response_time_ms: float
+
+
+class QueryLogEntry(BaseModel):
+    id: int
+    query_text: str
+    intent_classified: str
+    confidence_score: float
+    response_text: Optional[str]
+    response_time_ms: Optional[float]
+    success: bool
+    frontend: Optional[str]
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True

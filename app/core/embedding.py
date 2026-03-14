@@ -1,21 +1,61 @@
 """Embedding module for generating text embeddings"""
-from typing import List
+import hashlib
+import time
+from typing import List, Optional
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from app.config import settings
 
 
-class EmbeddingGenerator:
-    """Generate embeddings using sentence-transformers"""
+class EmbeddingCache:
+    def __init__(self, max_size: int = 1000):
+        self.max_size = max_size
+        self.cache = {}
+        self.access_order = []
     
+    def _get_key(self, text: str) -> str:
+        return hashlib.md5(text.encode()).hexdigest()
+    
+    def get(self, text: str) -> Optional[np.ndarray]:
+        key = self._get_key(text)
+        if key in self.cache:
+            self.access_order.remove(key)
+            self.access_order.append(key)
+            return self.cache[key]
+        return None
+    
+    def set(self, text: str, embedding: np.ndarray):
+        key = self._get_key(text)
+        if key in self.cache:
+            self.access_order.remove(key)
+        elif len(self.cache) >= self.max_size:
+            oldest = self.access_order.pop(0)
+            del self.cache[oldest]
+        
+        self.cache[key] = embedding
+        self.access_order.append(key)
+
+
+class EmbeddingGenerator:
     def __init__(self):
         self.model_name = settings.EMBEDDING_MODEL
         self._model = None
+        self.cache = EmbeddingCache(max_size=1000)
+        self._download_model()
+    
+    def _download_model(self):
+        try:
+            print(f"Loading embedding model: {self.model_name}")
+            start = time.time()
+            _ = self.model
+            elapsed = time.time() - start
+            print(f"Embedding model ready in {elapsed:.1f}s")
+        except Exception as e:
+            print(f"Warning: Could not load embedding model: {e}")
     
     @property
     def model(self) -> SentenceTransformer:
-        """Lazy load the model"""
         if self._model is None:
             self._model = SentenceTransformer(self.model_name)
         return self._model
@@ -48,26 +88,23 @@ class EmbeddingGenerator:
         return embeddings.astype(np.float32)
     
     def generate_single(self, text: str) -> np.ndarray:
-        """
-        Generate embedding for a single text
-        
-        Args:
-            text: Input text
-        
-        Returns:
-            numpy array of shape (384,)
-        """
         if not text or not text.strip():
-            # Return zero vector for empty text
             return np.zeros(384, dtype=np.float32)
         
+        # Check cache first
+        cached = self.cache.get(text)
+        if cached is not None:
+            return cached
+        
+        # Generate and cache
         embedding = self.model.encode(
             text,
             convert_to_numpy=True,
             normalize_embeddings=True
         )
-        
-        return embedding.astype(np.float32)
+        result = embedding.astype(np.float32)
+        self.cache.set(text, result)
+        return result
     
     @property
     def dimension(self) -> int:

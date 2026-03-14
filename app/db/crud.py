@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, desc, func
 from datetime import datetime
 
-from app.db.database import Document, QueryLog, IntentSpace
+from app.db.database import Document, QueryLog, IntentSpace, DocumentChunk
 
 
 class DocumentCRUD:
@@ -156,3 +156,46 @@ class IntentSpaceCRUD:
         result = await db.execute(delete(IntentSpace).where(IntentSpace.id == space_id))
         await db.commit()
         return result.rowcount > 0
+
+
+class DocumentChunkCRUD:
+    """CRUD operations for document chunks"""
+    
+    @staticmethod
+    async def create(db: AsyncSession, chunk_id: str, document_id: str, intent_space: str,
+                     chunk_index: int, content: str, token_count: Optional[int] = None) -> DocumentChunk:
+        chunk = DocumentChunk(
+            id=chunk_id,
+            document_id=document_id,
+            intent_space=intent_space,
+            chunk_index=chunk_index,
+            content=content,
+            token_count=token_count
+        )
+        db.add(chunk)
+        await db.commit()
+        await db.refresh(chunk)
+        return chunk
+    
+    @staticmethod
+    async def get_by_document(db: AsyncSession, document_id: str) -> List[DocumentChunk]:
+        result = await db.execute(
+            select(DocumentChunk).where(DocumentChunk.document_id == document_id)
+            .order_by(DocumentChunk.chunk_index)
+        )
+        return list(result.scalars().all())
+    
+    @staticmethod
+    async def get_by_intent_space(db: AsyncSession, intent_space: str, limit: int = 1000) -> List[DocumentChunk]:
+        result = await db.execute(
+            select(DocumentChunk).where(DocumentChunk.intent_space == intent_space)
+            .limit(limit)
+        )
+        return list(result.scalars().all())
+    
+    @staticmethod
+    async def delete_by_document(db: AsyncSession, document_id: str) -> int:
+        """Delete all chunks for a document. Returns number of deleted chunks."""
+        result = await db.execute(delete(DocumentChunk).where(DocumentChunk.document_id == document_id))
+        await db.commit()
+        return result.rowcount

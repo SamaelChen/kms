@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class DocumentBase(BaseModel):
     filename: str
-    file_type: str = Field(..., pattern="^(pdf|docx)$")
+    file_type: str = Field(..., pattern="^(pdf|docx|txt|md|xlsx|pptx)$")
     intent_space: str = "General"
 
 

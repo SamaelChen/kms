@@ -1,19 +1,28 @@
 """FastAPI main application"""
+import asyncio
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from app.db.database import init_db
 from app.api.v1.router import api_router
+from app.core.startup import download_llm_model
+from app.core.response_generator import response_generator
+from app.core.intent_classifier import intent_classifier
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager"""
     # Startup
     await init_db()
+    
+    # Download LLM model in background (don't block startup)
+    asyncio.create_task(download_llm_model())
+    
     yield
+    
     # Shutdown
-    pass
+    await response_generator.close()
+    await intent_classifier.close()
 
 
 app = FastAPI(

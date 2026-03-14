@@ -1,61 +1,61 @@
 """Query orchestrator module"""
 import time
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
-from app.config import settings
 from app.core.intent_classifier import intent_classifier
 from app.core.knowledge_base import knowledge_base
 from app.core.response_generator import response_generator
+from app.core.cache import query_cache
 from app.models.query import QueryRequest, QueryResponse, Citation
 
 
 class QueryOrchestrator:
-    """Orchestrate query processing pipeline"""
-    
     def __init__(self):
         self.intent_classifier = intent_classifier
         self.knowledge_base = knowledge_base
         self.response_generator = response_generator
     
-    async def process(
-        self,
-        request: QueryRequest
-    ) -> QueryResponse:
-        """
-        Process a query through the full pipeline
-        
-        Args:
-            request: Query request with text and metadata
-        
-        Returns:
-            Query response with answer and citations
-        """
+    async def process(self, request: QueryRequest) -> QueryResponse:
         start_time = time.time()
         
-        # Step 1: Classify intent
-        intent_space, confidence, method = await self.intent_classifier.classify(
-            request.query
-        )
+        # Process query - classify intent first
+        intent_space, confidence, _ = await self.intent_classifier.classify(request.query)
         
-        # Step 2: Search knowledge base
+        # Check cache with actual intent space
+        cached = query_cache.get(request.query, intent_space)
+        if cached:
+            response_time_ms = (time.time() - start_time) * 1000
+            return QueryResponse(
+                query=request.query,
+                response=cached["response"],
+                intent_classified=intent_space,
+                confidence_score=cached["confidence"],
+                citations=cached["citations"],
+                response_time_ms=response_time_ms
+            )
+        
         search_results = await self.knowledge_base.search(
             query=request.query,
             intent_space=intent_space,
             top_k=5
         )
         
-        # Step 3: Generate response
         response_text = await self.response_generator.generate(
             query=request.query,
             context_chunks=search_results,
             intent_space=intent_space
         )
         
-        # Calculate response time
         response_time_ms = (time.time() - start_time) * 1000
-        
-        # Build citations
         citations = self._build_citations(search_results)
+        
+        # Cache result
+        query_cache.set(request.query, intent_space, {
+            "response": response_text,
+            "intent": intent_space,
+            "confidence": confidence,
+            "citations": citations
+        })
         
         return QueryResponse(
             query=request.query,

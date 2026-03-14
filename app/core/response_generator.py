@@ -1,16 +1,30 @@
 """Response generation module using LLM"""
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import httpx
 
 from app.config import settings
 
 
 class ResponseGenerator:
-    """Generate responses using local LLM"""
-    
     def __init__(self):
         self.ollama_url = f"{settings.OLLAMA_BASE_URL}/api/generate"
         self.model = settings.LLM_MODEL
+        self.client: Optional[httpx.AsyncClient] = None
+    
+    async def _get_client(self) -> httpx.AsyncClient:
+        if self.client is None or self.client.is_closed:
+            self.client = httpx.AsyncClient(
+                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+                timeout=httpx.Timeout(
+                    settings.LLM_GENERATION_TIMEOUT,
+                    connect=settings.LLM_REQUEST_TIMEOUT
+                )
+            )
+        return self.client
+    
+    async def close(self):
+        if self.client and not self.client.is_closed:
+            await self.client.aclose()
     
     async def generate(
         self,
@@ -18,30 +32,12 @@ class ResponseGenerator:
         context_chunks: List[Tuple[dict, float]],
         intent_space: str
     ) -> str:
-        """
-        Generate response based on retrieved context
-        
-        Args:
-            query: User query
-            context_chunks: List of (chunk_metadata, score) tuples
-            intent_space: Classified intent space
-        
-        Returns:
-            Generated response with citations
-        """
         if not context_chunks:
             return self._generate_no_context_response(query, intent_space)
         
-        # Build context from chunks
         context_text = self._build_context(context_chunks)
-        
-        # Build prompt
         prompt = self._build_prompt(query, context_text, intent_space)
-        
-        # Generate response
         response = await self._call_llm(prompt)
-        
-        # Add citations
         response_with_citations = self._add_citations(response, context_chunks)
         
         return response_with_citations
@@ -78,29 +74,31 @@ Instructions:
 Answer:"""
     
     async def _call_llm(self, prompt: str) -> str:
-        """Call Ollama LLM"""
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.ollama_url,
-                    json={
-                        "model": self.model,
-                        "prompt": prompt,
-                        "stream": False,
-                        "options": {
-                            "temperature": 0.3,
-                            "num_predict": 500
-                        }
-                    },
-                    timeout=30.0
-                )
+            client = await self._get_client()
+            response = await client.post(
+                self.ollama_url,
+                json={
+                    "model": self.model,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {
+                        "temperature": 0.3,
+                        "num_predict": 500
+                    }
+                }
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("response", "").strip()
+            else:
+                return f"Error: LLM returned status {response.status_code}"
                 
-                if response.status_code == 200:
-                    result = response.json()
-                    return result.get("response", "").strip()
-                else:
-                    return f"Error: LLM returned status {response.status_code}"
-                    
+        except httpx.TimeoutException:
+            return "Error: LLM request timed out. The model is taking too long to respond."
+        except httpx.ConnectError:
+            return "Error: Cannot connect to Ollama. Please ensure it's running."
         except Exception as e:
             return f"Error generating response: {str(e)}"
     

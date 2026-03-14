@@ -14,7 +14,10 @@ st.header("Upload Document")
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "docx"])
+    uploaded_file = st.file_uploader(
+        "Choose a file", 
+        type=["pdf", "docx", "txt", "md", "xlsx", "pptx"]
+    )
 
 with col2:
     intent_space = st.selectbox(
@@ -56,9 +59,23 @@ try:
         if documents:
             df = pd.DataFrame(documents)
             
-            display_cols = ["filename", "intent_space", "status", "chunk_count", "created_at"]
-            if all(col in df.columns for col in display_cols):
-                st.dataframe(df[display_cols], use_container_width=True)
+            def format_status(status):
+                icons = {
+                    "pending": "🟡",
+                    "processing": "🔵",
+                    "completed": "🟢",
+                    "error": "🔴"
+                }
+                return f"{icons.get(status, '⚪')} {status.title()}"
+            
+            if "status" in df.columns:
+                df["status_display"] = df["status"].apply(format_status)
+            
+            display_cols = ["filename", "intent_space", "status_display", "chunk_count", "created_at"]
+            available_cols = [col for col in display_cols if col in df.columns]
+            
+            if available_cols:
+                st.dataframe(df[available_cols], use_container_width=True)
                 
                 st.subheader("Delete Document")
                 doc_to_delete = st.selectbox(

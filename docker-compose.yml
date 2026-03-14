@@ -9,6 +9,7 @@ services:
       - DATABASE_URL=sqlite+aiosqlite:///data/sqlite/kms.db
       - OLLAMA_BASE_URL=http://ollama:11434
       - HF_ENDPOINT=https://hf-mirror.com
+      - LLM_MODEL=qwen:0.5b
     volumes:
       - ./data:/app/data
     depends_on:

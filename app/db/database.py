@@ -72,6 +72,19 @@ class IntentSpace(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+class DocumentChunk(Base):
+    """Document chunk for vector storage"""
+    __tablename__ = "document_chunks"
+    
+    id = Column(String, primary_key=True)
+    document_id = Column(String, ForeignKey("documents.id"), nullable=False)
+    intent_space = Column(String, nullable=False)
+    chunk_index = Column(Integer, nullable=False)
+    content = Column(Text, nullable=False)
+    token_count = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 async def init_db():
     """Initialize database tables"""
     async with engine.begin() as conn:
