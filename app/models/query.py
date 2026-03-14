@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class QueryRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=2000)
     user_id: Optional[str] = None
-    frontend: Optional[str] = Field(None, pattern="^(telegram|teams|api)$")
+    frontend: Optional[str] = Field(None, pattern="^(telegram|teams|api|dashboard)$")
 
 
 class Citation(BaseModel):
