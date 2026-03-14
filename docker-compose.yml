@@ -10,8 +10,10 @@ services:
       - OLLAMA_BASE_URL=http://ollama:11434
       - HF_ENDPOINT=https://hf-mirror.com
       - LLM_MODEL=qwen:0.5b
+      - HF_HOME=/app/cache/huggingface
     volumes:
       - ./data:/app/data
+      - huggingface-cache:/app/cache/huggingface
     depends_on:
       - ollama
 
@@ -37,3 +39,4 @@ services:
 
 volumes:
   ollama-data:
+  huggingface-cache:

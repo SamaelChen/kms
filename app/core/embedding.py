@@ -42,22 +42,24 @@ class EmbeddingGenerator:
         self.model_name = settings.EMBEDDING_MODEL
         self._model = None
         self.cache = EmbeddingCache(max_size=1000)
-        self._download_model()
+        # Model is loaded lazily on first use to avoid blocking startup
     
-    def _download_model(self):
-        try:
-            print(f"Loading embedding model: {self.model_name}")
-            start = time.time()
-            _ = self.model
-            elapsed = time.time() - start
-            print(f"Embedding model ready in {elapsed:.1f}s")
-        except Exception as e:
-            print(f"Warning: Could not load embedding model: {e}")
+    def _ensure_model_loaded(self):
+        """Lazy load the model on first use"""
+        if self._model is None:
+            try:
+                print(f"Loading embedding model: {self.model_name}")
+                start = time.time()
+                self._model = SentenceTransformer(self.model_name)
+                elapsed = time.time() - start
+                print(f"Embedding model ready in {elapsed:.1f}s")
+            except Exception as e:
+                print(f"Warning: Could not load embedding model: {e}")
+                raise
     
     @property
     def model(self) -> SentenceTransformer:
-        if self._model is None:
-            self._model = SentenceTransformer(self.model_name)
+        self._ensure_model_loaded()
         return self._model
     
     def generate(self, texts: List[str]) -> np.ndarray:
