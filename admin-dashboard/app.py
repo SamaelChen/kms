@@ -1,4 +1,5 @@
 """Streamlit admin dashboard"""
+import os
 import streamlit as st
 import requests
 import pandas as pd
@@ -28,7 +29,7 @@ st.markdown("---")
 
 st.subheader("📊 Live Statistics")
 
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 col1, col2, col3, col4 = st.columns(4)
 

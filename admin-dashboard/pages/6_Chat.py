@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import requests
 from datetime import datetime
@@ -5,7 +6,7 @@ from typing import Optional
 
 st.set_page_config(page_title="Chat", page_icon="💬")
 
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 
 def query_api(query: str) -> Optional[dict]:

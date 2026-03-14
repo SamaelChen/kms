@@ -1,4 +1,5 @@
 """Analytics page"""
+import os
 import streamlit as st
 import requests
 import pandas as pd
@@ -6,7 +7,7 @@ from datetime import datetime
 
 st.title("📊 Analytics Dashboard")
 
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 st.markdown("""
 Monitor system performance, query patterns, and usage statistics.

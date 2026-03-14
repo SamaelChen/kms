@@ -22,6 +22,7 @@ services:
       - "8501:8501"
     environment:
       - DATABASE_URL=sqlite+aiosqlite:///data/sqlite/kms.db
+      - API_URL=http://api:8000
     volumes:
       - ./data:/app/data
     depends_on:

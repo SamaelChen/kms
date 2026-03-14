@@ -1,10 +1,11 @@
 """Bot integrations page"""
+import os
 import streamlit as st
 import requests
 
 st.title("🔌 Bot Integrations")
 
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 st.markdown("""
 Configure bot integrations to allow users to query your knowledge base through messaging platforms.

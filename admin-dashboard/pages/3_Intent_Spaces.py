@@ -1,10 +1,11 @@
 """Intent spaces configuration page"""
+import os
 import streamlit as st
 import requests
 
 st.title("🎯 Intent Spaces")
 
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 st.markdown("""
 Intent spaces categorize your documents and queries into logical groups.
