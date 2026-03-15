@@ -142,102 +142,271 @@ slide3.addText('• Qwen LLM integration via Ollama\n• Context-aware responses
 // SLIDE 4: System Architecture
 const slide4 = pptx.addSlide({ masterName: 'MASTER_SLIDE' });
 slide4.addText('System Architecture', {
-  x: 0.5, y: 0.5, w: '90%', h: 0.6,
-  fontSize: 36, bold: true, color: colors.primary,
+  x: 0.5, y: 0.3, w: '90%', h: 0.5,
+  fontSize: 32, bold: true, color: colors.primary,
   fontFace: 'Arial Black'
 });
 
-// Architecture diagram
+// Architecture container box
 slide4.addShape(pptx.ShapeType.rect, {
-  x: 0.5, y: 1.3, w: 2.8, h: 1.2,
+  x: 0.3, y: 0.9, w: 9.4, h: 4.6,
+  fill: { color: 'F8F9FA' },
+  line: { color: colors.gray, width: 1 }
+});
+
+// Layer 1: Client Layer
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 0.5, y: 1.0, w: 9.0, h: 0.6,
+  fill: { color: colors.dark }
+});
+slide4.addText('CLIENT LAYER', {
+  x: 0.5, y: 1.0, w: 9.0, h: 0.6,
+  fontSize: 11, bold: true, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+// Client boxes
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 0.7, y: 1.15, w: 2.0, h: 0.35,
+  fill: { color: '5A7D9A' }
+});
+slide4.addText('Streamlit Dashboard', {
+  x: 0.7, y: 1.15, w: 2.0, h: 0.35,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 2.9, y: 1.15, w: 1.8, h: 0.35,
+  fill: { color: '5A7D9A' }
+});
+slide4.addText('REST API', {
+  x: 2.9, y: 1.15, w: 1.8, h: 0.35,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 4.9, y: 1.15, w: 1.8, h: 0.35,
+  fill: { color: '5A7D9A' }
+});
+slide4.addText('Telegram Bot', {
+  x: 4.9, y: 1.15, w: 1.8, h: 0.35,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 6.9, y: 1.15, w: 2.4, h: 0.35,
+  fill: { color: '5A7D9A' }
+});
+slide4.addText('Microsoft Teams', {
+  x: 6.9, y: 1.15, w: 2.4, h: 0.35,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+// Layer 2: API Gateway Layer
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 0.5, y: 1.75, w: 9.0, h: 0.6,
   fill: { color: colors.primary }
 });
-slide4.addText('Frontend\n(Streamlit)', {
-  x: 0.5, y: 1.3, w: 2.8, h: 1.2,
-  fontSize: 14, bold: true, color: colors.white,
+slide4.addText('API GATEWAY LAYER', {
+  x: 0.5, y: 1.75, w: 9.0, h: 0.6,
+  fontSize: 11, bold: true, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+// FastAPI components
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 0.7, y: 1.9, w: 1.6, h: 0.35,
+  fill: { color: '028090' }
+});
+slide4.addText('FastAPI Core', {
+  x: 0.7, y: 1.9, w: 1.6, h: 0.35,
+  fontSize: 9, color: colors.white,
   align: 'center', valign: 'middle'
 });
 
 slide4.addShape(pptx.ShapeType.rect, {
-  x: 4.1, y: 1.3, w: 2.8, h: 1.2,
+  x: 2.5, y: 1.9, w: 1.4, h: 0.35,
+  fill: { color: '028090' }
+});
+slide4.addText('/queries/ask', {
+  x: 2.5, y: 1.9, w: 1.4, h: 0.35,
+  fontSize: 8, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 4.1, y: 1.9, w: 1.6, h: 0.35,
+  fill: { color: '028090' }
+});
+slide4.addText('/documents/upload', {
+  x: 4.1, y: 1.9, w: 1.6, h: 0.35,
+  fontSize: 8, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 5.9, y: 1.9, w: 1.6, h: 0.35,
+  fill: { color: '028090' }
+});
+slide4.addText('/health', {
+  x: 5.9, y: 1.9, w: 1.6, h: 0.35,
+  fontSize: 8, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 7.7, y: 1.9, w: 1.6, h: 0.35,
+  fill: { color: '028090' }
+});
+slide4.addText('Async Tasks', {
+  x: 7.7, y: 1.9, w: 1.6, h: 0.35,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+// Layer 3: Core Services Layer
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 0.5, y: 2.5, w: 9.0, h: 1.0,
   fill: { color: colors.secondary }
 });
-slide4.addText('FastAPI\nBackend', {
-  x: 4.1, y: 1.3, w: 2.8, h: 1.2,
-  fontSize: 14, bold: true, color: colors.white,
+slide4.addText('CORE SERVICES LAYER', {
+  x: 0.5, y: 2.5, w: 9.0, h: 0.25,
+  fontSize: 11, bold: true, color: colors.white,
   align: 'center', valign: 'middle'
 });
 
-slide4.addShape(pptx.ShapeType.rect, {
-  x: 7.7, y: 1.3, w: 1.8, h: 1.2,
-  fill: { color: colors.accent }
+// Service modules
+slide4.addShape(pptx.ShapeType.roundRect, {
+  x: 0.7, y: 2.8, w: 1.8, h: 0.55,
+  fill: { color: '00A896' },
+  rectRadius: 0.05
 });
-slide4.addText('Ollama\n(LLM)', {
-  x: 7.7, y: 1.3, w: 1.8, h: 1.2,
-  fontSize: 14, bold: true, color: colors.white,
+slide4.addText('Query\nOrchestrator', {
+  x: 0.7, y: 2.8, w: 1.8, h: 0.55,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.roundRect, {
+  x: 2.7, y: 2.8, w: 1.6, h: 0.55,
+  fill: { color: '00A896' },
+  rectRadius: 0.05
+});
+slide4.addText('Intent\nClassifier', {
+  x: 2.7, y: 2.8, w: 1.6, h: 0.55,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.roundRect, {
+  x: 4.5, y: 2.8, w: 1.8, h: 0.55,
+  fill: { color: '00A896' },
+  rectRadius: 0.05
+});
+slide4.addText('Document\nProcessor', {
+  x: 4.5, y: 2.8, w: 1.8, h: 0.55,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.roundRect, {
+  x: 6.5, y: 2.8, w: 1.6, h: 0.55,
+  fill: { color: '00A896' },
+  rectRadius: 0.05
+});
+slide4.addText('Response\nGenerator', {
+  x: 6.5, y: 2.8, w: 1.6, h: 0.55,
+  fontSize: 9, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+slide4.addShape(pptx.ShapeType.roundRect, {
+  x: 8.3, y: 2.8, w: 1.0, h: 0.55,
+  fill: { color: '00A896' },
+  rectRadius: 0.05
+});
+slide4.addText('KB\nSearch', {
+  x: 8.3, y: 2.8, w: 1.0, h: 0.55,
+  fontSize: 8, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+// Layer 4: Data Layer
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 0.5, y: 3.65, w: 6.5, h: 0.75,
+  fill: { color: '1B4965' }
+});
+slide4.addText('DATA LAYER', {
+  x: 0.5, y: 3.65, w: 6.5, h: 0.25,
+  fontSize: 11, bold: true, color: colors.white,
   align: 'center', valign: 'middle'
 });
 
 // Data stores
 slide4.addShape('cylinder', {
-  x: 0.5, y: 3.0, w: 2.5, h: 1.0,
+  x: 0.7, y: 3.85, w: 1.8, h: 0.45,
   fill: { color: 'EDF2F7' },
-  line: { color: colors.dark, width: 2 }
+  line: { color: colors.dark, width: 1 }
 });
-slide4.addText('SQLite\n(Metadata)', {
-  x: 0.5, y: 3.0, w: 2.5, h: 1.0,
-  fontSize: 12, bold: true, color: colors.dark,
+slide4.addText('SQLite\nMetadata', {
+  x: 0.7, y: 3.85, w: 1.8, h: 0.45,
+  fontSize: 8, bold: true, color: colors.dark,
   align: 'center', valign: 'middle'
 });
 
 slide4.addShape('cylinder', {
-  x: 3.5, y: 3.0, w: 2.5, h: 1.0,
+  x: 2.7, y: 3.85, w: 1.8, h: 0.45,
   fill: { color: 'EDF2F7' },
-  line: { color: colors.dark, width: 2 }
+  line: { color: colors.dark, width: 1 }
 });
-slide4.addText('FAISS\n(Vectors)', {
-  x: 3.5, y: 3.0, w: 2.5, h: 1.0,
-  fontSize: 12, bold: true, color: colors.dark,
+slide4.addText('FAISS\nVectors', {
+  x: 2.7, y: 3.85, w: 1.8, h: 0.45,
+  fontSize: 8, bold: true, color: colors.dark,
   align: 'center', valign: 'middle'
 });
 
 slide4.addShape('cylinder', {
-  x: 6.5, y: 3.0, w: 2.5, h: 1.0,
+  x: 4.7, y: 3.85, w: 1.8, h: 0.45,
   fill: { color: 'EDF2F7' },
-  line: { color: colors.dark, width: 2 }
+  line: { color: colors.dark, width: 1 }
 });
-slide4.addText('File System\n(Documents)', {
-  x: 6.5, y: 3.0, w: 2.5, h: 1.0,
-  fontSize: 12, bold: true, color: colors.dark,
+slide4.addText('File System\nDocuments', {
+  x: 4.7, y: 3.85, w: 1.8, h: 0.45,
+  fontSize: 8, bold: true, color: colors.dark,
   align: 'center', valign: 'middle'
 });
 
-// Connections
-slide4.addShape(pptx.ShapeType.line, {
-  x: 4.1, y: 2.5, w: 0, h: 0.5,
-  line: { color: colors.gray, width: 2, dashType: 'dash' }
+// External Services
+slide4.addShape(pptx.ShapeType.rect, {
+  x: 7.2, y: 3.65, w: 2.3, h: 0.75,
+  fill: { color: colors.accent }
 });
-slide4.addShape(pptx.ShapeType.line, {
-  x: 4.1, y: 3.0, w: -1.6, h: 0,
-  line: { color: colors.gray, width: 2, dashType: 'dash' }
-});
-slide4.addShape(pptx.ShapeType.line, {
-  x: 4.1, y: 3.0, w: 1.4, h: 0,
-  line: { color: colors.gray, width: 2, dashType: 'dash' }
-});
-slide4.addShape(pptx.ShapeType.line, {
-  x: 6.5, y: 3.0, w: 1.2, h: 0,
-  line: { color: colors.gray, width: 2, dashType: 'dash' }
+slide4.addText('EXTERNAL SERVICES', {
+  x: 7.2, y: 3.65, w: 2.3, h: 0.2,
+  fontSize: 10, bold: true, color: colors.white,
+  align: 'center', valign: 'middle'
 });
 
-// Tech stack
-slide4.addText('Technology Stack', {
-  x: 0.5, y: 4.5, w: '90%', h: 0.3,
-  fontSize: 14, bold: true, color: colors.primary
+slide4.addShape(pptx.ShapeType.roundRect, {
+  x: 7.4, y: 3.85, w: 1.9, h: 0.45,
+  fill: { color: '02C39A' },
+  rectRadius: 0.05
 });
-slide4.addText('Python 3.10 | FastAPI | SQLAlchemy | FAISS | Sentence-Transformers | Ollama | Docker | Streamlit', {
-  x: 0.5, y: 4.8, w: '90%', h: 0.3,
-  fontSize: 12, color: colors.text
+slide4.addText('Ollama LLM\n(qwen:0.5b)', {
+  x: 7.4, y: 3.85, w: 1.9, h: 0.45,
+  fontSize: 8, color: colors.white,
+  align: 'center', valign: 'middle'
+});
+
+// Tech stack label
+slide4.addText('Python 3.10 | FastAPI | SQLAlchemy | FAISS | Sentence-Transformers | Ollama | Docker', {
+  x: 0.5, y: 4.55, w: 9.0, h: 0.25,
+  fontSize: 10, color: colors.text,
+  align: 'center'
 });
 
 // SLIDE 5: Performance Optimizations
