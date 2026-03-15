@@ -467,7 +467,7 @@ slide9.addText('IntelliKnow KMS', {
   fontSize: 24, color: colors.accent,
   align: 'center', fontFace: 'Arial'
 });
-slide9.addText('Questions?', {
+slide9.addText('Thank You for Your Attention', {
   x: 0.5, y: 4.8, w: '90%', h: 0.4,
   fontSize: 20, color: colors.gray,
   align: 'center', fontFace: 'Arial'
